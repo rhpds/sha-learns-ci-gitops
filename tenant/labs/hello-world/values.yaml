@@ -13,7 +13,7 @@ deployer:
 # App-specific values
 message: "Default message if nothing passed"
 replicas: 1
-imageTag: "2.4"
+imageTag: "latest"
 
 # Container image (OpenShift-compatible - runs on port 8080, unprivileged)
 image:
