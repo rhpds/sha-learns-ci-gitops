@@ -6,34 +6,38 @@
 
 # defaults
 default_settings: &git_defaults
-  repoURL: https://github.com/rhpds/ci-template-gitops.git
+  repoURL: https://github.com/rhpds/sha-learns-ci-gitops.git
   targetRevision: main
 
 deployer:
-  domain: apps.cluster-guid.sandbox.opentlc.com
-  apiUrl: https://api.cluster-guid.sandbox.opentlc.com:6443
+  domain: apps.cluster-aaaa-yourdomain.com
+  apiUrl: https://api.cluster-aaaa.yourdomain.com:6443
 
 tenant:
   name: GUID
   user:
     name: agv-generated-username@GUID
-    password: openshift
+    password: generated_password
     keycloakEnabled: false
 
-namespace:
-  namePrefix: vms
+# not needed for this example
+# namespace:
+#   namePrefix: vms
 
 # create an app in a namespace
 # who doesn't need a loadtester?
-loadtest:
-  enabled: false
-  requestsPerSecond: 0 #off
-  duration: 1000
-  url: https://example.com/your/app
+# not needed for this example
+# loadtest:
+#   enabled: false
+#   requestsPerSecond: 0 #off
+#   duration: 1000
+#   url: https://example.com/your/app
 
 labs:
-  rosetta:
-    enabled: false
+  # rosetta:
+  #   enabled: false
+  helloWorld:         # ← ADD THIS
+      enabled: false
 
 keycloakRealm:
   enabled: false
