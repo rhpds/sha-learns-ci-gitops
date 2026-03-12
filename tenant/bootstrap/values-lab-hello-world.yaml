@@ -10,7 +10,7 @@ labHelloWorld:
     replicas: 1
 
     # Additional configurable values
-    imageTag: "2.4"
+    imageTag: "latest"
 
     # Git repository configuration
     git:
