@@ -20,22 +20,22 @@ tenant:
     password: generated_password
     keycloakEnabled: false
 
-# not needed for this example
-# namespace:
-#   namePrefix: vms
+# not needed for this example but keeping for reference and not breaking the example
+namespace:
+  namePrefix: vms
 
 # create an app in a namespace
 # who doesn't need a loadtester?
-# not needed for this example
-# loadtest:
-#   enabled: false
-#   requestsPerSecond: 0 #off
-#   duration: 1000
-#   url: https://example.com/your/app
+# not needed for this example but keeping for reference and not breaking the example
+loadtest:
+  enabled: false
+  requestsPerSecond: 0 #off
+  duration: 1000
+  url: https://example.com/your/app
 
 labs:
-  # rosetta:
-  #   enabled: false
+  rosetta:
+    enabled: false
   helloWorld:         # ← ADD THIS
       enabled: false
 
