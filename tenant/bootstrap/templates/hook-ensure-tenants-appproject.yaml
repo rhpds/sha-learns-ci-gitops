@@ -1,0 +1,127 @@
+---
+# ServiceAccount for the hook Job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenants-appproject-creator
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-100"
+---
+# Role with permissions to create and get AppProjects
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenants-appproject-creator
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-100"
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - appprojects
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - patch
+---
+# RoleBinding to grant permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenants-appproject-creator
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-100"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tenants-appproject-creator
+subjects:
+- kind: ServiceAccount
+  name: tenants-appproject-creator
+  namespace: openshift-gitops
+---
+# Job that creates the tenants AppProject if it doesn't exist
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ensure-tenants-appproject-{{ .Values.deployer.guid }}
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      name: ensure-tenants-appproject
+    spec:
+      serviceAccountName: tenants-appproject-creator
+      restartPolicy: Never
+      containers:
+      - name: create-appproject
+        image: registry.redhat.io/openshift4/ose-cli:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+
+          echo "Checking if 'tenants' AppProject exists..."
+
+          if oc get appproject tenants -n openshift-gitops &>/dev/null; then
+            echo "✓ AppProject 'tenants' already exists - nothing to do"
+            exit 0
+          fi
+
+          echo "✗ AppProject 'tenants' does not exist - creating it..."
+
+          cat <<'EOF' | oc apply -f -
+          apiVersion: argoproj.io/v1alpha1
+          kind: AppProject
+          metadata:
+            name: tenants
+            namespace: openshift-gitops
+            labels:
+              managed-by: bootstrap-tenant
+            annotations:
+              # Prevent ArgoCD from tracking this as owned by any specific Application
+              # This ensures it won't be deleted when a tenant's bootstrap Application is removed
+              argocd.argoproj.io/tracking-id: ""
+              # Prevent accidental deletion during sync operations
+              argocd.argoproj.io/sync-options: "Prune=false"
+          spec:
+            description: Shared project for tenant-specific deployments
+
+            # Allow tenants to pull from any Git repository
+            sourceRepos:
+            - '*'
+
+            # Allow tenants to deploy to any namespace
+            destinations:
+            - namespace: '*'
+              server: https://kubernetes.default.svc
+
+            # Allow tenants to create any cluster-scoped resources
+            clusterResourceWhitelist:
+            - group: '*'
+              kind: '*'
+
+            # Allow tenants to create any namespace-scoped resources
+            namespaceResourceWhitelist:
+            - group: '*'
+              kind: '*'
+          EOF
+
+          echo "✓ AppProject 'tenants' created successfully"
