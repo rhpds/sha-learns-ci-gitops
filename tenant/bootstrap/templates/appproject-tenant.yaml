@@ -14,8 +14,11 @@ metadata:
     tenant: {{ .Values.tenant.name }}
     managed-by: bootstrap-tenant
   annotations:
-    # Prevent accidental deletion by ArgoCD
+    # Prevent accidental deletion during sync operations
     argocd.argoproj.io/sync-options: "Prune=false"
+    # Delete this AppProject LAST to avoid race conditions
+    # During deletion, ArgoCD processes higher waves first (Applications=1), then lower waves (AppProject=0)
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   description: "Workload applications for tenant {{ .Values.tenant.name }}"
 

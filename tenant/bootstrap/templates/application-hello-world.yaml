@@ -8,6 +8,10 @@ metadata:
   labels:
     app: hello-world
     tenant: {{ .Values.tenant.name | lower }}
+  annotations:
+    # Delete this Application BEFORE the AppProject to avoid race conditions
+    # During deletion, ArgoCD processes higher waves first
+    argocd.argoproj.io/sync-wave: "1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
