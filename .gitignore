@@ -1,2 +1,14 @@
 ansible/ocp4_workload_authentication
 ocp-virt-admin-rosetta-gitops
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*~
+
+# Editor files
+*.swp
+*.swo
+.*.swp
+.*.swo
