@@ -11,7 +11,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: tenant-{{ .Values.tenant.name }}
+  project: default
   source:
     repoURL: {{ $lab.app.git.url }}
     targetRevision: {{ $lab.app.git.revision }}

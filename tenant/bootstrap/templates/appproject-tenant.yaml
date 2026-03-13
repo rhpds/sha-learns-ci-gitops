@@ -1,0 +1,56 @@
+---
+# Per-tenant ArgoCD AppProject
+# This project isolates student workload applications (hello-world, rosetta, etc)
+# from the bootstrap/infrastructure layer.
+#
+# Students can optionally be granted access to view/sync apps in this project
+# while bootstrap-tenant stays in the 'tenants' project (operator access only).
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: tenant-{{ .Values.tenant.name }}
+  namespace: openshift-gitops
+  labels:
+    tenant: {{ .Values.tenant.name }}
+    managed-by: bootstrap-tenant
+  annotations:
+    # Prevent accidental deletion by ArgoCD
+    argocd.argoproj.io/sync-options: "Prune=false"
+spec:
+  description: "Workload applications for tenant {{ .Values.tenant.name }}"
+
+  # Allow student workloads to pull from the GitOps repo
+  sourceRepos:
+  - {{ .Values.deployer.gitopsRepoUrl | default "https://github.com/rhpds/sha-learns-ci-gitops.git" }}
+
+  # Only allow deployments to this tenant's namespaces
+  destinations:
+  - namespace: {{ .Values.tenant.name }}-*
+    server: https://kubernetes.default.svc
+
+  # Student workloads should not create cluster-scoped resources
+  clusterResourceWhitelist: []
+
+  # Allow all namespace-scoped resources
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+{{- if .Values.argocd.studentAccess.enabled }}
+  # Student RBAC - only created if studentAccess is enabled
+  roles:
+  - name: student
+    description: "Student can view and sync their workload applications"
+    policies:
+    # Allow viewing applications in this project
+    - p, proj:tenant-{{ .Values.tenant.name }}:student, applications, get, tenant-{{ .Values.tenant.name }}/*, allow
+    # Allow syncing (re-deploying) applications
+    - p, proj:tenant-{{ .Values.tenant.name }}:student, applications, sync, tenant-{{ .Values.tenant.name }}/*, allow
+    {{- if .Values.argocd.studentAccess.allowDelete }}
+    # Allow deleting applications (optional, usually not recommended)
+    - p, proj:tenant-{{ .Values.tenant.name }}:student, applications, delete, tenant-{{ .Values.tenant.name }}/*, allow
+    {{- end }}
+    # Map Keycloak user/group to this role
+    groups:
+    - {{ .Values.tenant.name }}
+{{- end }}

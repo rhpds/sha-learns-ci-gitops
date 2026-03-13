@@ -12,6 +12,7 @@ default_settings: &git_defaults
 deployer:
   domain: apps.cluster-aaaa-yourdomain.com
   apiUrl: https://api.cluster-aaaa.yourdomain.com:6443
+  gitopsRepoUrl: https://github.com/rhpds/sha-learns-ci-gitops.git
 
 tenant:
   name: GUID
@@ -41,3 +42,11 @@ labs:
 
 keycloakRealm:
   enabled: false
+
+# ArgoCD student access configuration
+# When enabled, students can view and sync their workload applications
+# via the ArgoCD UI. Requires SSO configuration in ArgoCD.
+argocd:
+  studentAccess:
+    enabled: false        # Default: students cannot access ArgoCD
+    allowDelete: false    # Allow students to delete applications (rarely needed)
