@@ -1,0 +1,53 @@
+{
+  "skill_name": "agnosticv-gitops-workload-document",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Document the descheduler workload",
+      "expected_output": "README.md at infra/descheduler-operator/README.md. Standard two-layer workload: Overview (two layers), File Inventory (tree format), How to Enable (two flags table, catalog snippet, shared doc link), Variables Reference (infra chart + platform chart + hardcoded CR values), Gotchas (two-flag requirement, ignoreDifferences, MachineConfig reboots, non-templatized CR, sync-wave ordering)",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create documentation for the webterminal workload",
+      "expected_output": "README.md at platform/webterminal/README.md. Platform-only with sub-chart dependencies: Overview, File Inventory, How to Enable (single flag, no catalog override), Variables (operator + status-checker settings), Gotchas (external chart repo, operator.enabled unused, hardcoded path, two Application manifests, bootstrap overrides)",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Write a README for the kubevirt operator workload",
+      "expected_output": "README.md at infra/kubevirt-operator/README.md. Two-layer with Manual install plan pattern: Overview, File Inventory (installplan-approval-job + HyperConverged + StorageClass + vm-datasource-job), How to Enable (two flags), Variables (pinned CSV, external_ceph, guid), Gotchas (Manual approval pattern, pinned CSV, ignoreDifferences, external Ceph hardcoded, cluster-admin Jobs)",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Document platform/gitlab",
+      "expected_output": "README.md at platform/gitlab/README.md. Platform-only, non-operator deployment: Overview (GitLab + PostgreSQL + Redis), File Inventory (large tree), How to Enable (missing git defaults gotcha), Variables (gitlab, SMTP, postgresql settings, groups format), Gotchas (hardcoded path, missing git defaults, cluster-specific host, placeholder passwords, init Job wait, privileged containers, vestigial overrides)",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Document the node health check and self node remediation workloads",
+      "expected_output": "Main README at infra/node-health-check-operator/README.md covering all three components (NHC operator, SNR operator, platform console plugin). Brief companion README at infra/self-node-remediation-operator/README.md pointing to main doc. Three enable flags, cross-references between related operators, shared namespace gotcha.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Document the keycloak workload",
+      "expected_output": "README at infra/keycloak/README.md (parent directory). Architecture diagram showing 3 sub-charts + tenant integration. File inventory covering keycloak-infra, keycloak-resources, keycloak-realm, and tenant bootstrap references. Three enable flags. Variables for all three charts. Gotchas (deployment order, auto-generated secrets, CronJobs, Organizations feature, userdata ConfigMaps, tenant-owned keycloak-realm, scratch directory).",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Document the default-storageclass workload",
+      "expected_output": "README at infra/default-storageclass/README.md. Infra-only, single flag (defaults to enabled: true — unusual). Idempotent sync hook Job at wave -50. Gotchas (enabled by default, earliest wave, hook-based cleanup, least-privilege RBAC, StorageClass must already exist).",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Document the RHOAI workload",
+      "expected_output": "README at infra/rhoai-operator/README.md. Two-layer with inner gates and sub-chart dependencies. Brief companion at platform/rhoai/README.md. Variables for DSCInitialization, DataScienceCluster (all components default Removed), patcher. Gotchas (inner gates, bootstrap overrides API version, all components Removed by default, DSCInitialization requires serviceMesh, PostSync hooks, missing syncPolicy).",
+      "files": []
+    }
+  ]
+}
